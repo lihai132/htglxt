@@ -29,7 +29,7 @@
         <el-input size="small" placeholder v-model="input2" style="width:30%"></el-input>
       </li>
       <el-button size="small" style="width:105px" @click="cx">查询</el-button>
-      <el-button size="small" style="width:105px">导出excel</el-button>
+      <el-button size="small" style="width:105px" @click="exportExcel">导出excel</el-button>
     </ul>
 
     <el-table
@@ -145,6 +145,32 @@ export default {
       });
 
       return sums;
+    },
+
+    exportExcel() {
+      require.ensure([], () => {
+        const {
+          export_json_to_excel
+        } = require("../../../excel/Export2Excel.js");
+        const tHeader = [
+          "用户id",
+          "用户昵称",
+          "名字",
+          "充值方式",
+          "付款金额",
+          "充值时间"
+        ];
+        // 上面设置Excel的表格第一行的标题
+        const filterVal = ["dh", "userid", "name", "czfs", "num", "txtime"];
+        // 上面的index、nickName、name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, "充值记录");
+      });
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

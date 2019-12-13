@@ -41,14 +41,14 @@
       <el-table-column prop="time" label="日期" width="220"></el-table-column>
       <el-table-column prop="fjid" label="房间id" width="100"></el-table-column>
       <el-table-column prop="fjname" label="房间名" width="188"></el-table-column>
-      <el-table-column prop="fjlx" label="唱歌房" width="120"></el-table-column>
+      <el-table-column prop="fjlx" label="房间类型" width="120"></el-table-column>
       <el-table-column prop="userid" label="房主id" width="100"></el-table-column>
       <el-table-column prop="zbprice" label="房间直播流水" width="120"></el-table-column>
       <el-table-column prop="zdprice" label="房间砸蛋流水" width="120"></el-table-column>
       <el-table-column prop="zprice" label="总流水" width="120"></el-table-column>
       <el-table-column prop="zdfc" label="砸蛋分成" width="100"></el-table-column>
       <el-table-column label="操作" width="108">
-        <el-button size="small">导出excel</el-button>
+        <el-button size="small" @click="exportExcel">导出excel</el-button>
       </el-table-column>
     </el-table>
   </div>
@@ -172,6 +172,44 @@ export default {
       });
 
       return sums;
+    },
+    exportExcel() {
+      require.ensure([], () => {
+        const {
+          export_json_to_excel
+        } = require("../../../excel/Export2Excel.js");
+        const tHeader = [
+          "日期",
+          "房间id",
+          "房间名",
+          "房间类型",
+          "房主id",
+          "房间直播流水",
+          "房间砸蛋流水",
+          "总流水",
+          "砸蛋分成"
+        ];
+        // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          "time",
+          "fjid",
+          "fjname",
+          "fjlx",
+          "userid",
+          "zbprice",
+          "zdprice",
+          "zprice",
+          "zdfc"
+        ];
+        // 上面的index、nickName、name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, "房间数据");
+      });
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

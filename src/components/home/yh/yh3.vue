@@ -30,7 +30,7 @@
       </li>
       <li class="l4" style="width:80px">
         <el-button size="small" style="width:100%" @click="cx">查询</el-button>
-        <el-button size="small" style="width:100%">导出excel</el-button>
+        <el-button size="small" style="width:100%" @click="exportExcel">导出excel</el-button>
       </li>
     </ul>
     <el-table
@@ -145,6 +145,42 @@ export default {
       });
 
       return sums;
+    },
+    exportExcel() {
+      require.ensure([], () => {
+        const {
+          export_json_to_excel
+        } = require("../../../excel/Export2Excel.js");
+        const tHeader = [
+          "id",
+          "手机",
+          "昵称",
+          "消费金额",
+          "消费点",
+          "礼物",
+          "数量",
+          "消费时间"
+        ];
+        // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          "id",
+          "sj",
+          "username",
+          "money",
+          "xfs",
+          "lw",
+          "num",
+          "time"
+        ];
+        // 上面的index、nickName、name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, "资金明细");
+      });
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

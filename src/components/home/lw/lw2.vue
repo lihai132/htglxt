@@ -34,7 +34,7 @@
         <div>受赠人id</div>
         <el-input size="small" placeholder v-model="input2" style="width:113.33px"></el-input>
       </li>
-      <el-button size="small" @click="cx">导出excel</el-button>
+      <el-button size="small" @click="exportExcel">导出excel</el-button>
     </ul>
 
     <el-table :data="tableData" border style="width: 52.9%">
@@ -126,6 +126,44 @@ export default {
     },
     fh() {
       this.$emit("fh");
+    },
+    exportExcel() {
+      require.ensure([], () => {
+        const {
+          export_json_to_excel
+        } = require("../../../excel/Export2Excel.js");
+        const tHeader = [
+          "号",
+          "礼物序号",
+          "礼物名称",
+          "数量",
+          "赠方id",
+          "赠方昵称",
+          "受方id",
+          "受方昵称",
+          "时间"
+        ];
+        // 上面设置Excel的表格第一行的标题
+        const filterVal = [
+          "hao",
+          "lwxh",
+          "lwmc",
+          "num",
+          "zfid",
+          "zfname",
+          "sfid",
+          "sfname",
+          "time"
+        ];
+        // 上面的index、nickName、name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, "礼物记录");
+      });
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };

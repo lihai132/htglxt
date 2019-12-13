@@ -4,19 +4,22 @@
       <ul class="u1">
         <li>
           <span>用户id</span>
-          <el-input size="small" v-model="userid" style="width:70%"></el-input>
+          <el-input size="small" v-model="userid" style="width:50%"></el-input>
         </li>
 
         <li>
           <span>房间id</span>
-          <el-input size="small" v-model="fjid" style="width:70%"></el-input>
+          <el-input size="small" v-model="fjid" style="width:50%"></el-input>
         </li>
 
         <li>
-          <span>日期</span>
-          <el-input size="small" v-model="time" style="width:70%"></el-input>
+          <span>从</span>
+          <el-input size="small" v-model="time1" style="width:30%"></el-input>
+          <span>到</span>
+          <el-input size="small" v-model="time2" style="width:30%"></el-input>
         </li>
         <el-button size="small" @click="buttom">查询</el-button>
+        <el-button size="small" @click="exportExcel">导出</el-button>
       </ul>
     </div>
 
@@ -76,7 +79,8 @@ export default {
       ],
       userid: "",
       fjid: "",
-      time: "",
+      time1: "",
+      time2: "",
       je: "",
       price: ""
     };
@@ -137,6 +141,31 @@ export default {
       });
 
       return sums;
+    },
+    exportExcel() {
+      require.ensure([], () => {
+        const {
+          export_json_to_excel
+        } = require("../../../excel/Export2Excel.js");
+        const tHeader = [
+          "用户id",
+          "房间id",
+          "消费金额",
+          "时间",
+          "奖品",
+          "价值"
+        ];
+        // 上面设置Excel的表格第一行的标题
+        const filterVal = ["userid", "fjid", "je", "time", "jp", "price"];
+        // 上面的index、nickName、name是tableData里对象的属性
+        const list = this.tableData; //把data里的tableData存到list
+        const data = this.formatJson(filterVal, list);
+        export_json_to_excel(tHeader, data, "砸蛋数据");
+      });
+    },
+
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v => filterVal.map(j => v[j]));
     }
   }
 };
@@ -153,6 +182,7 @@ li {
       display: flex;
       justify-content: flex-start;
       padding-left: 0px;
+      width: 53%;
       li {
         margin-right: 1.25rem;
         display: flex;
@@ -160,6 +190,7 @@ li {
           font-size: 1rem;
           line-height: 32px;
           margin-right: 7px;
+          margin-left: 7px;
         }
       }
       .el-button {
