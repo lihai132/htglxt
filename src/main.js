@@ -22,12 +22,22 @@ import echarts from "echarts";
 Vue.prototype.$echarts = echarts
 
 
+router.onError((error) => {
+  const pattern = /Loading chunk (\d)+ failed/g;
+  const isChunkLoadFailed = error.message.match(pattern);
+  if (isChunkLoadFailed) {
+    window.location.reload();
+    // router.replace(router.history.pending.fullPath);
+  } else {
+    window.console.log(error)
+  }
+});
 
 
 
 new Vue({
   //把router注入到vue实例中
   router,
- 
+
   render: h => h(App),
 }).$mount('#app')
